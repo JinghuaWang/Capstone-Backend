@@ -1,0 +1,5 @@
+# This is the runtime configuration file for GCP App Engine 
+# to learn about project setting
+
+# configurate go runtime
+runtime: go115
