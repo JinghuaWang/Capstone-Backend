@@ -9,26 +9,22 @@ import (
 
 func AddCourse(course *DAO.Course) error {
 	var courseFound DAO.Course
-	err := DAO.DB().Where("course_code = ?", course.CourseCode).Find(&courseFound).Error
-	log.Print(err)
-	log.Print(courseFound)
-
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		// save to database
-		error := DAO.DB().Create(&course).Error
-		if error != nil {
-			return &Error{500, "DB Error"}
+	result := DAO.DB().Where("course_code = ?", course.CourseCode).First(&courseFound)
+	if result.Error != nil {
+		// If this course hasn't created, add this to the courses table
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			error := DAO.DB().Create(&course).Error
+			if error != nil {
+				return &Error{500, "DB Error"}
+			}
+			return nil
 		}
-		return nil
-	}
-
-	if err != nil {
 		return &Error{500, "DB Error"}
 	}
 
 	// The course code has existed in the database, update the row with the new request
-	log.Printf("%d has already existed in databse, add course with req %+v\n", course.CourseCode, course)
-	err = DAO.DB().Model(&courseFound).Updates(course).Error
+	log.Printf("%s has already existed in databse, add course with req %+v\n", course.CourseCode, course)
+	err := DAO.DB().Model(&courseFound).Updates(course).Error
 	if err != nil {
 		return &Error{500, "DB Error"}
 	}

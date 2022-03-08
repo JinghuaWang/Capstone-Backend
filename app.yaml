@@ -3,3 +3,8 @@
 
 # configurate go runtime
 runtime: go115
+env_variables:
+    INSTANCE_UNIX_SOCKET: /cloudsql/capstone2022-342303:us-west1:capstone-database
+    DB_USER: root
+    DB_PASS: 8OrnH4PqD0018J4O
+    DB_NAME: production

@@ -19,6 +19,7 @@ func main() {
 
 func initialize() {
 	DAO.Init()
+	handler.InitCachedData()
 }
 
 func registerHandler() {
@@ -29,6 +30,7 @@ func registerHandler() {
 	// register all handlers
 	r.GET("/", handler.IndexHandler)
 	r.GET("/course/list", handler.GetCourseListHandler)
+	r.GET("/course/search", handler.SearchCourseHandler)
 	r.GET("/course/info", handler.GetCourseInfoHandler)
 	r.POST("/course/info/add", handler.AddCourseInfoHandler)
 	r.GET("/course/professor/info", handler.GetCourseProfessorInfoHandler)

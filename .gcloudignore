@@ -12,6 +12,8 @@
 # below:
 .git
 .gitignore
+/cloudsql
+cloudsql
 
 # Binaries for programs and plugins
 *.exe

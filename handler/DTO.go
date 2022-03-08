@@ -14,6 +14,10 @@ type CourseInfo struct {
 	Professors  []string `json:"professors"`
 }
 
+type CourseSearch struct {
+	QueryString string `json:"query_string"`
+}
+
 type CourseCreateInfoReq struct {
 	CourseCode  string   `json:"course_code"`
 	CourseTitle string   `json:"course_title"`
