@@ -2,6 +2,7 @@ package main
 
 import (
 	"capstone-backend/DAO"
+	"capstone-backend/dataimport"
 	"capstone-backend/handler"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -10,16 +11,21 @@ import (
 	"os"
 )
 
-// Register HTTP Handler
 func main() {
 	initialize()
+	// Register HTTP Handler
 	registerHandler()
 	startServer()
+	//importData()
 }
 
 func initialize() {
 	DAO.Init()
 	handler.InitCachedData()
+}
+
+func importData() {
+	dataimport.ImportGPAData()
 }
 
 func registerHandler() {

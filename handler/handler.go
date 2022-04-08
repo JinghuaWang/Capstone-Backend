@@ -22,6 +22,7 @@ func IndexHandler(c *gin.Context) {
 }
 
 func InitCachedData() {
+	// fetch all courses from the DB and cache the list
 	var allCourses []DAO.Course
 
 	err := DAO.DB().Order("course_full_name").Find(&allCourses).Error

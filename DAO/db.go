@@ -43,7 +43,11 @@ func Init() {
 	}
 
 	// Migrate the schema
-	db.AutoMigrate(&Course{})
+	db.AutoMigrate(
+		&Course{},
+		&CourseGrade{},
+	)
+
 }
 
 func DB() *gorm.DB {
