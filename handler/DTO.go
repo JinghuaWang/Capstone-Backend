@@ -1,5 +1,10 @@
 package handler
 
+import (
+	"time"
+)
+
+// course list
 type CourseEntry struct {
 	CourseCode     string `json:"course_code"`
 	CourseFullName string `json:"course_full_name"`
@@ -16,14 +21,6 @@ type CourseInfo struct {
 
 type CourseSearch struct {
 	QueryString string `json:"query_string"`
-}
-
-type CourseCreateInfoReq struct {
-	CourseCode  string   `json:"course_code"`
-	CourseTitle string   `json:"course_title"`
-	Credit      string   `json:"credit"`
-	Tags        []string `json:"tags"`
-	Description string   `json:"description"`
 }
 
 type CourseProfessorInfo struct {
@@ -61,6 +58,40 @@ type RatingBreakdown struct {
 	AmountLearn             float32 `json:"amount_learn"`
 }
 
+// Add course to course catalog
+type CourseCreateInfoReq struct {
+	CourseCode  string   `json:"course_code"`
+	CourseTitle string   `json:"course_title"`
+	Credit      string   `json:"credit"`
+	Tags        []string `json:"tags"`
+	Description string   `json:"description"`
+}
+
+// Q&A
+type QuestionInfo struct {
+	QuestionID   int       `json:"question_id"`
+	QuestionText string    `json:"question_text"`
+	AskedAt      time.Time `json:"asked_at"`
+	Answers      []Answer  `json:"answers"`
+}
+
+type Answer struct {
+	AnswerText string    `json:"answer_text"`
+	AnsweredAt time.Time `json:"answered_at"`
+}
+
+type CreateQuestion struct {
+	CourseCode   string `json:"course_code"`
+	QuestionText string `json:"question_text"`
+}
+
+type CreateAnswer struct {
+	CourseCode string `json:"course_code"`
+	QuestionID int    `json:"question_id""`
+	AnswerText string `json:"answer_text"`
+}
+
+// helper struct
 type Response struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`

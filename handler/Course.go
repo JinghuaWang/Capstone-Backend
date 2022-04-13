@@ -30,3 +30,16 @@ func AddCourse(course *DAO.Course) error {
 	}
 	return nil
 }
+
+func CourseExist(courseCode string) (bool, error) {
+	course := DAO.Course{
+		CourseCode: courseCode,
+	}
+	if err := DAO.DB().Where(course).First(&course).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, nil
+		}
+		return false, &Error{500, "DB Error"}
+	}
+	return true, nil
+}
