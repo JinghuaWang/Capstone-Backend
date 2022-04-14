@@ -3,6 +3,7 @@ package handler
 import (
 	"capstone-backend/DAO"
 	"errors"
+	"fmt"
 	"gorm.io/gorm"
 	"log"
 )
@@ -42,4 +43,24 @@ func CourseExist(courseCode string) (bool, error) {
 		return false, &Error{500, "DB Error"}
 	}
 	return true, nil
+}
+
+func AllCourse() []CourseEntry {
+	var allCourses []DAO.Course
+
+	err := DAO.DB().Order("course_code").Find(&allCourses).Error
+	if err != nil {
+		panic(fmt.Sprintf("Fail to initialize course list cache %v", err))
+	}
+
+	courses = make([]CourseEntry, len(allCourses))
+	for i, c := range allCourses {
+		courseEntry := CourseEntry{
+			CourseCode:     c.CourseCode,
+			CourseFullName: c.CourseFullName,
+		}
+
+		courses[i] = courseEntry
+	}
+	return courses
 }

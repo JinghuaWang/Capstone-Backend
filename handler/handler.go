@@ -16,6 +16,7 @@ const SEARCH_RESULT_MAX = 10
 var courses []CourseEntry
 var courseList []DAO.Course
 var courseFullNameMap = make(map[string]CourseEntry)
+var courseMap = make(map[string]DAO.Course)
 
 func IndexHandler(c *gin.Context) {
 	c.String(http.StatusOK, "Hi, welcome to the capstone backend index page!")
@@ -25,7 +26,7 @@ func InitCachedData() {
 	// fetch all courses from the DB and cache the list
 	var allCourses []DAO.Course
 
-	err := DAO.DB().Order("course_full_name").Find(&allCourses).Error
+	err := DAO.DB().Order("course_code").Find(&allCourses).Error
 	if err != nil {
 		panic(fmt.Sprintf("Fail to initialize course list cache %v", err))
 	}
@@ -46,6 +47,7 @@ func InitCachedData() {
 			CourseFullName: strings.ToLower(c.CourseFullName),
 		}
 		courseFullNameMap[strings.ToLower(c.CourseFullName)] = courseEntry
+		courseMap[c.CourseCode] = c
 	}
 }
 
