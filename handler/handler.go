@@ -23,6 +23,10 @@ func IndexHandler(c *gin.Context) {
 }
 
 func InitCachedData() {
+	initCourseData()
+}
+
+func initCourseData() {
 	// fetch all courses from the DB and cache the list
 	var allCourses []DAO.Course
 

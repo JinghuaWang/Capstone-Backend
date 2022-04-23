@@ -82,7 +82,7 @@ func ListQuestionsHandler(c *gin.Context) {
 		Select("questions.id, questions.updated_at, questions.question_text, questions.is_preset, answers.answer_text, answers.updated_at as answer_updated_at").
 		Joins("left join answers on answers.question_id = questions.id").
 		Where("questions.course_code = ? AND questions.deleted_at is NULL AND answers.deleted_at is NULL ", courseCode).
-		Order("questions.updated_at DESC, questions.id DESC, answers.updated_at DESC").
+		Order("questions.updated_at DESC, questions.id ASC, answers.updated_at DESC").
 		Find(&results).
 		Error; err != nil {
 		ErrResp(c, &Error{500, "DB Error"})
