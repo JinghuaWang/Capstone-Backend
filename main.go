@@ -40,9 +40,12 @@ func registerHandler() {
 	r.GET("/course/info", handler.GetCourseInfoHandler)
 	r.POST("/course/info/add", handler.AddCourseInfoHandler)
 	r.GET("/course/professor/info", handler.GetCourseProfessorInfoHandler)
+
 	r.GET("/course/qa/list", handler.ListQuestionsHandler)
 	r.POST("/course/question/add", handler.AddQuestionHandler)
 	r.POST("/course/answer/add", handler.AddAnswerHandler)
+
+	r.GET("/course/recommendation", handler.ListRecommendationHandler)
 
 	// Retrieve port
 	port := os.Getenv("PORT")

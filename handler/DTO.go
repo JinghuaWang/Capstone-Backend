@@ -91,6 +91,19 @@ type CreateAnswer struct {
 	AnswerText string `json:"answer_text"`
 }
 
+type RecommendCourses struct {
+	GPABooster     []string `json:"gpa_booster"`
+	PopularCourses []string `json:"popular_courses"`
+	Tech           Tech     `json:"tech"`
+}
+
+type Tech struct {
+	DataAnalysisAndMachineLearning []string `json:"data_analysis_and_machine_learning"`
+	Backend                        []string `json:"backend"`
+	Frontend                       []string `json:"frontend"`
+	Design                         []string `json:"design"`
+}
+
 // helper struct
 type Response struct {
 	Code    int    `json:"code"`
