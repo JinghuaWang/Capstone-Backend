@@ -104,14 +104,14 @@ func qaListToNestedList(list []QuestionAnswer) []*QuestionInfo {
 			question = &QuestionInfo{
 				QuestionID:   qa.Id,
 				QuestionText: qa.QuestionText,
-				AskedAt:      qa.UpdatedAt,
+				AskedAt:      qa.UpdatedAt.Format("2006-01-02"),
 			}
 			resp = append(resp, question)
 		}
 
 		question.Answers = append(question.Answers, Answer{
 			AnswerText: qa.AnswerText,
-			AnsweredAt: qa.AnswerUpdatedAt,
+			AnsweredAt: qa.AnswerUpdatedAt.Format("2006-01-02"),
 		})
 	}
 

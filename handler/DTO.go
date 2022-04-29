@@ -1,9 +1,5 @@
 package handler
 
-import (
-	"time"
-)
-
 // course list
 type CourseEntry struct {
 	CourseCode     string `json:"course_code"`
@@ -69,15 +65,15 @@ type CourseCreateInfoReq struct {
 
 // Q&A
 type QuestionInfo struct {
-	QuestionID   int       `json:"question_id"`
-	QuestionText string    `json:"question_text"`
-	AskedAt      time.Time `json:"asked_at"`
-	Answers      []Answer  `json:"answers"`
+	QuestionID   int      `json:"question_id"`
+	QuestionText string   `json:"question_text"`
+	AskedAt      string   `json:"asked_at"`
+	Answers      []Answer `json:"answers"`
 }
 
 type Answer struct {
-	AnswerText string    `json:"answer_text"`
-	AnsweredAt time.Time `json:"answered_at"`
+	AnswerText string `json:"answer_text"`
+	AnsweredAt string `json:"answered_at"`
 }
 
 type CreateQuestion struct {
