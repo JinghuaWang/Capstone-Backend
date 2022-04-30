@@ -47,7 +47,7 @@ func registerHandler() {
 
 	r.GET("/course/recommendation", handler.ListRecommendationHandler)
 
-	// Retrieve port
+	// Retrieve port from environment
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"

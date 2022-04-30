@@ -76,23 +76,39 @@ func ListQuestionsHandler(c *gin.Context) {
 		return
 	}
 
-	// Get the questions and answers by joining tables
-	var results []QuestionAnswer
+	// Get QA by fetching preset and non-preset because they have different ranking rules
+
+	// Get the preset QA by joining tables
+	var presetQuestions []QuestionAnswer
 	if err := DAO.DB().Table("questions").
 		Select("questions.id, questions.updated_at, questions.question_text, questions.is_preset, answers.answer_text, answers.updated_at as answer_updated_at").
 		Joins("left join answers on answers.question_id = questions.id").
-		Where("questions.course_code = ? AND questions.deleted_at is NULL AND answers.deleted_at is NULL ", courseCode).
-		Order("questions.updated_at DESC, questions.id ASC, answers.updated_at DESC").
-		Find(&results).
+		Where("questions.course_code = ? AND questions.is_preset = 1 AND questions.deleted_at is NULL AND answers.deleted_at is NULL ", courseCode).
+		Order("questions.id ASC, answers.updated_at DESC").
+		Find(&presetQuestions).
 		Error; err != nil {
 		ErrResp(c, &Error{500, "DB Error"})
 		return
 	}
 
-	DataResp(c, qaListToNestedList(results))
+	// Get the non-preset QA
+	var nonPresetQuestions []QuestionAnswer
+	if err := DAO.DB().Table("questions").
+		Select("questions.id, questions.updated_at, questions.question_text, questions.is_preset, answers.answer_text, answers.updated_at as answer_updated_at").
+		Joins("left join answers on answers.question_id = questions.id").
+		Where("questions.course_code = ? AND questions.is_preset = 0 AND questions.deleted_at is NULL AND answers.deleted_at is NULL ", courseCode).
+		Order("questions.updated_at DESC, answers.updated_at DESC").
+		Find(&nonPresetQuestions).
+		Error; err != nil {
+		ErrResp(c, &Error{500, "DB Error"})
+		return
+	}
+
+	// append the preset QA with non preset QA after converting to nested structure
+	DataResp(c, append(qaListToNestedList(presetQuestions), qaListToNestedList(nonPresetQuestions)...))
 }
 
-// pre condition: questions are grouped by question id
+// pre-condition: questions are grouped by question id
 func qaListToNestedList(list []QuestionAnswer) []*QuestionInfo {
 	// group results by question id
 	var resp []*QuestionInfo

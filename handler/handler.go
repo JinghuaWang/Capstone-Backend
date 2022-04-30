@@ -24,6 +24,7 @@ func IndexHandler(c *gin.Context) {
 
 func InitCachedData() {
 	initCourseData()
+	initRecommendationCourses()
 }
 
 func initCourseData() {

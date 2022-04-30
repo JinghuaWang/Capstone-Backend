@@ -1,8 +1,30 @@
 package handler
 
-import "github.com/gin-gonic/gin"
+import (
+	"capstone-backend/DAO"
+	"fmt"
+	"github.com/gin-gonic/gin"
+)
 
-var COURSES = RecommendCourses{
+// helper objects to configure recommendation courses
+type recConfig struct {
+	GPABooster     []string
+	PopularCourses []string
+	Tech           techConfig
+}
+
+type techConfig struct {
+	DataAnalysisAndMachineLearning []string
+	Backend                        []string
+	Frontend                       []string
+	Design                         []string
+}
+
+// recommendation course brief will be populated according the configuration
+var recommendationCourse RecommendCourses
+
+// configure recommandataion courses
+var COURSES = recConfig{
 	GPABooster: []string{
 		"MUSIC 185",
 		"ESS 101",
@@ -47,7 +69,7 @@ var COURSES = RecommendCourses{
 		"EDUC 251",
 		"CLAS 430",
 	},
-	Tech: Tech{
+	Tech: techConfig{
 		DataAnalysisAndMachineLearning: []string{
 			"INFO 201",
 			"INFO 330",
@@ -80,5 +102,63 @@ var COURSES = RecommendCourses{
 }
 
 func ListRecommendationHandler(c *gin.Context) {
-	DataResp(c, COURSES)
+	DataResp(c, recommendationCourse)
+}
+
+// initialize recommendation courses and cache into memory
+func initRecommendationCourses() {
+	// pre populate recommendationCourse
+	recommendationCourse = RecommendCourses{
+		PopularCourses: courseCodesToCourseBriefs(COURSES.PopularCourses),
+		GPABooster:     courseCodesToCourseBriefs(COURSES.GPABooster),
+		Tech: Tech{
+			DataAnalysisAndMachineLearning: courseCodesToCourseBriefs(COURSES.Tech.DataAnalysisAndMachineLearning),
+			Frontend:                       courseCodesToCourseBriefs(COURSES.Tech.Frontend),
+			Backend:                        courseCodesToCourseBriefs(COURSES.Tech.Backend),
+			Design:                         courseCodesToCourseBriefs(COURSES.Tech.Design),
+		},
+	}
+
+	// get all the course code
+	var courseCodes []string
+	courseCodes = append(courseCodes, COURSES.PopularCourses...)
+	courseCodes = append(courseCodes, COURSES.GPABooster...)
+	courseCodes = append(courseCodes, COURSES.Tech.DataAnalysisAndMachineLearning...)
+	courseCodes = append(courseCodes, COURSES.Tech.Frontend...)
+	courseCodes = append(courseCodes, COURSES.Tech.Backend...)
+	courseCodes = append(courseCodes, COURSES.Tech.Design...)
+
+	// fetch course info
+	var courses []DAO.Course
+	err := DAO.DB().Where("course_code in ?", courseCodes).Find(&courses).Error
+	if err != nil {
+		panic(fmt.Sprintf("Fail to initialize course recommendation info %v", err))
+	}
+
+	// fill in other course info
+	coursesToCourseBriefs(recommendationCourse.PopularCourses, courseMap)
+	coursesToCourseBriefs(recommendationCourse.GPABooster, courseMap)
+	coursesToCourseBriefs(recommendationCourse.Tech.DataAnalysisAndMachineLearning, courseMap)
+	coursesToCourseBriefs(recommendationCourse.Tech.Frontend, courseMap)
+	coursesToCourseBriefs(recommendationCourse.Tech.Backend, courseMap)
+	coursesToCourseBriefs(recommendationCourse.Tech.Design, courseMap)
+}
+
+// populate course briefs by course codes
+func courseCodesToCourseBriefs(courseCodes []string) []*CourseBrief {
+	var briefs []*CourseBrief
+	for _, courseCode := range courseCodes {
+		briefs = append(briefs, &CourseBrief{
+			CourseCode: courseCode,
+		})
+	}
+	return briefs
+}
+
+// populate course info from course map
+func coursesToCourseBriefs(briefs []*CourseBrief, courseMap map[string]DAO.Course) {
+	for _, brief := range briefs {
+		brief.Tags = courseMap[brief.CourseCode].Tags
+		brief.Credit = courseMap[brief.CourseCode].Credit
+	}
 }

@@ -88,16 +88,22 @@ type CreateAnswer struct {
 }
 
 type RecommendCourses struct {
-	GPABooster     []string `json:"gpa_booster"`
-	PopularCourses []string `json:"popular_courses"`
-	Tech           Tech     `json:"tech"`
+	PopularCourses []*CourseBrief `json:"popular_courses"`
+	GPABooster     []*CourseBrief `json:"gpa_booster"`
+	Tech           Tech           `json:"tech"`
 }
 
 type Tech struct {
-	DataAnalysisAndMachineLearning []string `json:"data_analysis_and_machine_learning"`
-	Backend                        []string `json:"backend"`
-	Frontend                       []string `json:"frontend"`
-	Design                         []string `json:"design"`
+	DataAnalysisAndMachineLearning []*CourseBrief `json:"data_analysis_and_machine_learning"`
+	Backend                        []*CourseBrief `json:"backend"`
+	Frontend                       []*CourseBrief `json:"frontend"`
+	Design                         []*CourseBrief `json:"design"`
+}
+
+type CourseBrief struct {
+	CourseCode string   `json:"course_code"`
+	Tags       []string `json:"tags"`
+	Credit     string   `json:"credit"`
 }
 
 // helper struct
