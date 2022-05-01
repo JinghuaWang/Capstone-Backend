@@ -155,6 +155,25 @@ func GetCourseInfoHandler(c *gin.Context) {
 }
 
 func GetCourseProfessorInfoHandler(c *gin.Context) {
+	var courseCode = c.Query("course_code")
+
+	if courseCode == "" {
+		InvalidResp(c, "Invalid Parameters")
+		return
+	}
+
+	// get aggregated course grade from database
+	var courseGrade DAO.CourseGradeAggr
+	courseGrade.CourseCode = courseCode
+	if err := DAO.DB().Where(courseGrade).First(&courseGrade).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			InvalidResp(c, "Invalid Course Code")
+			return
+		}
+		ErrResp(c, &Error{500, "DB Error"})
+		return
+	}
+
 	var rating = RatingBreakdown{
 		4.5,
 		4.5,
@@ -167,24 +186,24 @@ func GetCourseProfessorInfoHandler(c *gin.Context) {
 	}
 
 	var grade = GradeDistribution{
-		20,
-		48,
-		37,
-		17,
-		12,
-		9,
-		7,
-		6,
-		4,
-		3,
-		3,
-		5,
-		7,
+		courseGrade.A,
+		courseGrade.AMinus,
+		courseGrade.BPlus,
+		courseGrade.B,
+		courseGrade.BMinus,
+		courseGrade.CPlus,
+		courseGrade.C,
+		courseGrade.CMinus,
+		courseGrade.DPlus,
+		courseGrade.D,
+		courseGrade.DMinus,
+		courseGrade.Fail,
+		courseGrade.Withdraw,
 	}
 
 	var resp = CourseProfessorInfo{
 		4.6,
-		3.2,
+		courseGrade.AverageGPA,
 		17,
 		grade,
 		rating,

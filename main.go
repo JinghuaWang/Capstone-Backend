@@ -26,6 +26,7 @@ func initialize() {
 
 func importData() {
 	dataimport.ImportGPAData()
+	dataimport.AggregateGPA()
 }
 
 func registerHandler() {

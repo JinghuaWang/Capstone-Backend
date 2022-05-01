@@ -125,3 +125,27 @@ func processGPAData(data [][]string, codeToId map[string]uint) []DAO.CourseGrade
 	}
 	return grades
 }
+
+// AggregateGPA aggregates raw grade data for each course
+func AggregateGPA() {
+	var gradeAgrrs []DAO.CourseGradeAggr
+	if err := DAO.
+		DB().
+		Table("course_grades").
+		Select("course_code, cast(sum(average_gap * student_count) / sum(student_count) as decimal(10,2)) as average_gpa, " +
+			"sum(student_count) as student_count, sum(a) as a, sum(a_minus) as a_minus, " +
+			"sum(b_plus) as b_plus, sum(b) as b, sum(b_minus) as b_minus, " +
+			"sum(c_plus) as c_plus, sum(c) as c, sum(c_minus) as c_minus, " +
+			"sum(d_plus) as d_plus, sum(d) as d, sum(d_minus) as d_minus, " +
+			"sum(fail) as fail, sum(withdraw) as withdraw").
+		Group("course_code").
+		Find(&gradeAgrrs).
+		Error; err != nil {
+		panic(fmt.Sprintf("Fail to aggreate GPA data, err: %v", err))
+	}
+
+	// insert the aggregated data into the course_grade_aggrs table
+	if err := DAO.DB().CreateInBatches(&gradeAgrrs, 100).Error; err != nil {
+		panic(fmt.Sprintf("Fail to insert aggreated GPA data, err: %v", err))
+	}
+}

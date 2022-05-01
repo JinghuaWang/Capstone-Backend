@@ -46,6 +46,7 @@ func Init() {
 	db.AutoMigrate(
 		&Course{},
 		&CourseGrade{},
+		&CourseGradeAggr{},
 		&Question{},
 		&Answer{},
 	)
