@@ -16,7 +16,6 @@ func main() {
 	// Register HTTP Handler
 	registerHandler()
 	startServer()
-	//importData()
 }
 
 func initialize() {
@@ -27,6 +26,8 @@ func initialize() {
 func importData() {
 	dataimport.ImportGPAData()
 	dataimport.AggregateGPA()
+	dataimport.ImportCourseEvalData()
+	dataimport.AggregateCourseEvaluation()
 }
 
 func registerHandler() {

@@ -164,7 +164,9 @@ func GetCourseProfessorInfoHandler(c *gin.Context) {
 
 	// get aggregated course grade from database
 	var courseGrade DAO.CourseGradeAggr
+	var courseRating DAO.CourseEvalAggr
 	courseGrade.CourseCode = courseCode
+	courseRating.CourseCode = courseCode
 	if err := DAO.DB().Where(courseGrade).First(&courseGrade).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			InvalidResp(c, "Invalid Course Code")
@@ -174,15 +176,15 @@ func GetCourseProfessorInfoHandler(c *gin.Context) {
 		return
 	}
 
-	var rating = RatingBreakdown{
-		4.5,
-		4.5,
-		4.5,
-		4.7,
-		4.5,
-		4.5,
-		4.7,
-		4.5,
+	useMockData := false
+	if err := DAO.DB().Where(courseRating).First(&courseRating).Error; err != nil {
+		// if the course evaluation data isn't found, use mock data
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			useMockData = true
+			return
+		}
+		ErrResp(c, &Error{500, "DB Error"})
+		return
 	}
 
 	var grade = GradeDistribution{
@@ -201,10 +203,37 @@ func GetCourseProfessorInfoHandler(c *gin.Context) {
 		courseGrade.Withdraw,
 	}
 
+	rating := RatingBreakdown{
+		4.5,
+		4.5,
+		4.5,
+		4.7,
+		4.5,
+		4.5,
+		4.7,
+		4.5,
+	}
+	var overallRating float32 = 4.6
+	var hoursPerWeek float32 = 9
+	if !useMockData {
+		rating = RatingBreakdown{
+			InstructorContribution:      OneDecimal(courseRating.InstructorsContribution),
+			TeachingEffectiveness:       OneDecimal(courseRating.TeachingEffectiveness),
+			CourseOrganization:          OneDecimal(courseRating.CourseOrganization),
+			ClarityOfConceptExplanation: OneDecimal(courseRating.ClarityOfConceptExplanation),
+			AvailabilityOfExtraHelp:     OneDecimal(courseRating.AvailabilityOfExtraHelp),
+			UsefulnessOfCourseContent:   OneDecimal(courseRating.UsefulnessOfCourseContent),
+			GradingTechniques:           OneDecimal(courseRating.GradingTechniques),
+			ReasonableAssignedWork:      OneDecimal(courseRating.ReasonableAssignedWork),
+		}
+		overallRating = courseRating.OverallRating
+		hoursPerWeek = courseRating.HoursPerWeek
+	}
+
 	var resp = CourseProfessorInfo{
-		4.6,
+		OneDecimal(overallRating),
 		courseGrade.AverageGPA,
-		17,
+		OneDecimal(hoursPerWeek),
 		grade,
 		rating,
 	}

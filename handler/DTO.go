@@ -1,5 +1,7 @@
 package handler
 
+import "strconv"
+
 // course list
 type CourseEntry struct {
 	CourseCode     string `json:"course_code"`
@@ -20,9 +22,9 @@ type CourseSearch struct {
 }
 
 type CourseProfessorInfo struct {
-	OverallRating     float32           `json:"overall_rating"`
+	OverallRating     OneDecimal        `json:"overall_rating"`
 	AverageGPA        float32           `json:"average_gpa"`
-	Hours             float32           `json:"hours"`
+	Hours             OneDecimal        `json:"hours"`
 	GradeDistribution GradeDistribution `json:"grade_distribution"`
 	RatingBreakdown   RatingBreakdown   `json:"rating_breakdown"`
 }
@@ -44,14 +46,14 @@ type GradeDistribution struct {
 }
 
 type RatingBreakdown struct {
-	TheCourseAsAWhole       float32 `json:"the_course_as_a_whole"`
-	TheCourseContent        float32 `json:"the_course_content"`
-	InstructorContribution  float32 `json:"instructor_contribution"`
-	InstructorEffectiveness float32 `json:"instructor_effectiveness"`
-	InstructorInterest      float32 `json:"instructor_interest"`
-	QuizSectionContent      float32 `json:"quiz_section_content"`
-	GradingTechniques       float32 `json:"grading_techniques"`
-	AmountLearn             float32 `json:"amount_learn"`
+	InstructorContribution      OneDecimal `json:"instructor_contribution"`
+	TeachingEffectiveness       OneDecimal `json:"teaching_effectiveness"`
+	CourseOrganization          OneDecimal `json:"course_organization"`
+	ClarityOfConceptExplanation OneDecimal `json:"clarity_of_concept_explanation"`
+	AvailabilityOfExtraHelp     OneDecimal `json:"availability_of_extra_help"`
+	UsefulnessOfCourseContent   OneDecimal `json:"usefulness_of_course_content"`
+	GradingTechniques           OneDecimal `json:"grading_techniques"`
+	ReasonableAssignedWork      OneDecimal `json:"reasonable_assigned_work"`
 }
 
 // Add course to course catalog
@@ -107,6 +109,12 @@ type CourseBrief struct {
 }
 
 // helper struct
+type OneDecimal float32
+
+func (f OneDecimal) MarshalJSON() ([]byte, error) {
+	return []byte(strconv.FormatFloat(float64(f), 'f', 1, 32)), nil
+}
+
 type Response struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`

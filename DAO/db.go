@@ -49,6 +49,8 @@ func Init() {
 		&CourseGradeAggr{},
 		&Question{},
 		&Answer{},
+		&CourseEval{},
+		&CourseEvalAggr{},
 	)
 
 }

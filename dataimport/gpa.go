@@ -11,7 +11,7 @@ import (
 )
 
 // File location of GPA dataset
-const GPA_FILE_PATH = "gpa.csv"
+const GPA_FILE_PATH = "data/gpa.csv"
 
 func ImportGPAData() {
 	// read GPA data from local file
